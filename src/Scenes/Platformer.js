@@ -57,11 +57,15 @@ class Platformer extends Phaser.Scene {
 
         // Handle collision detection with coins
         this.physics.add.overlap(my.sprite.player, this.coinGroup, (player, coin) => {
+            my.vfx.coinPickup.start();
+
             coin.destroy();
             this.score++;
             let next_str = 'Score: ' + this.score;
             this.scoreText.setText(next_str);
             console.log('Coin collected! Score:', this.score); // Debugging line
+            
+            my.vfx.coinPickup.stop();
         });
 
         // Set up Phaser-provided cursor key input
@@ -83,6 +87,17 @@ class Platformer extends Phaser.Scene {
         });
 
         my.vfx.walking.stop();
+
+        my.vfx.coinPickup = this.add.particles(0, 0, "kenny-particles", {
+            frame: ['circle_01.png', 'circle_05.png'],
+            scale: { start: 0.03, end: 0.1 },
+            lifespan: 120,
+            alpha: { start: 1, end: 0.1 },
+        });
+
+        my.vfx.coinPickup.stop();
+
+
 
         this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         this.cameras.main.startFollow(my.sprite.player, true, 0.25, 0.25);
