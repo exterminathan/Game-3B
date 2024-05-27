@@ -74,12 +74,12 @@ class Platformer extends Phaser.Scene {
         this.CROUCH_SCALE = 0.5;
         this.CROUCH_JUMP_VELOCITY = this.JUMP_VELOCITY / 2;
         this.WALL_JUMP_VELOCITY_X = this.JUMP_VELOCITY * 0.95;
-        this.WALL_JUMP_VELOCITY_Y = this.JUMP_VELOCITY * 1.05;
+        this.WALL_JUMP_VELOCITY_Y = this.JUMP_VELOCITY * 0.85;
         this.DOUBLE_JUMP = true; // Enable double jump feature
 
         this.isWallJumping = false;
         this.wallJumpDirection = 0;
-        this.allowWallJump = false;
+        this.allowWallJump = true;
 
         this.physics.world.gravity.y = 3000; // Increased from 1500
         this.MAX_JUMP_DURATION = 180; // Decreased from 300 to make jumps quicker
@@ -104,7 +104,7 @@ class Platformer extends Phaser.Scene {
         });
 
         // Set up player avatar
-        this.player = this.physics.add.sprite(30, 345, "platformer_characters", 0);
+        this.player = this.physics.add.sprite(1200, 0, "platformer_characters", 0);
         this.player.setCollideWorldBounds(true);
         this.player.setTint(0xff0000);
 
@@ -119,8 +119,9 @@ class Platformer extends Phaser.Scene {
         this.enemies = this.physics.add.group();
         const enemyCoordinates = [
             { x: 200, y: 300 },
-            { x: 400, y: 300 },
-            { x: 600, y: 300 }
+            { x: 425, y: 0 },
+            { x: 800, y: 0 },
+            { x: 1100, y: 300}
         ];
 
         // Create enemies at specified coordinates
@@ -309,8 +310,8 @@ class Platformer extends Phaser.Scene {
 
         // Handle wall jumping
         if (this.allowWallJump) {
-            const leftTiles = this.groundLayer.getTilesWithinWorldXY(this.player.x - 10, this.player.y, 10, this.player.height, { isNotEmpty: true });
-            const rightTiles = this.groundLayer.getTilesWithinWorldXY(this.player.x + this.player.width, this.player.y, 10, this.player.height, { isNotEmpty: true });
+            const leftTiles = this.groundLayer.getTilesWithinWorldXY(this.player.x - 10, this.player.y - this.player.height / 2, 10, this.player.height, { isNotEmpty: true });
+            const rightTiles = this.groundLayer.getTilesWithinWorldXY(this.player.x + this.player.width, this.player.y - this.player.height / 2, 10, this.player.height, { isNotEmpty: true });
 
             const isTouchingWallLeft = leftTiles.some(tile => tile.collides);
             const isTouchingWallRight = rightTiles.some(tile => tile.collides);
@@ -352,15 +353,23 @@ class Platformer extends Phaser.Scene {
         }
 
         // FAN STUFF
-        // Check for fan tiles directly below the player at any y level
-        const fanTiles = this.groundLayer.getTilesWithinWorldXY(this.player.x, this.player.y + this.player.height, 1, 1000, { isNotEmpty: true }).filter(tile => tile.properties.fan);
-        if (fanTiles.length > 0) {
-            const fanPower = fanTiles[0].properties.fanPower || 200; // Use the first fan tile's properties or a default
-            let can_go = !this.isBlockedByCollisionTile(this.player, fanTiles[0]);
-            if (can_go) {
-                this.player.setVelocityY(-fanPower);
-            }
+    const fanTiles = this.groundLayer.getTilesWithinWorldXY(this.player.x, this.player.y + this.player.height, 1, 1000, { isNotEmpty: true }).filter(tile => tile.properties.fan);
+    if (fanTiles.length > 0) {
+        const fanPower = fanTiles[0].properties.fanPower || 200;
+        let can_go = !this.isBlockedByCollisionTile(this.player, fanTiles[0]);
+        if (can_go) {
+            this.player.setVelocityY(-fanPower);
+            this.fanEffectActive = true;
+            this.fanEffectTimer = this.time.now;
         }
+    } else if (this.fanEffectActive && this.time.now - this.fanEffectTimer < this.fanEffectDuration) {
+        // Gradually reduce the fan effect
+        const elapsedTime = this.time.now - this.fanEffectTimer;
+        const reducedFanPower = Phaser.Math.Linear(200, 0, elapsedTime / this.fanEffectDuration);
+        this.player.setVelocityY(-reducedFanPower);
+    } else {
+        this.fanEffectActive = false;
+    }
 
         // Handle crouching
         if (this.lShiftKey.isDown) {

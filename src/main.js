@@ -22,12 +22,12 @@ let config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true,
+            debug: false,
             gravity: { y: 3000},
         }
     },
-    width: 1440,
-    height: 900,
+    width: 2000,
+    height: 950,
     scene: [Load, Platformer, EndScene]
 }
 
