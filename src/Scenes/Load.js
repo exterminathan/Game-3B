@@ -22,7 +22,7 @@ class Load extends Phaser.Scene {
 
 
         // Load the bitmap font
-        this.load.setPath('/assets/fonts');
+        this.load.setPath('./assets/fonts');
         this.load.bitmapFont('b93', 'b93font_0.png', 'b93font.fnt');
 
 
