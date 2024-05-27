@@ -204,8 +204,6 @@ class Platformer extends Phaser.Scene {
         this.cameras.main.setZoom(this.SCALE);
         this.cameras.main.setFollowOffset(0, -this.map.heightInPixels / 2);
 
-        console.log('Score text created:', this.scoreText);
-
         // VFX
         my.vfx.walking = this.add.particles(0, 0, "kenny-particles", {
             frame: ['smoke_01.png', 'smoke_02.png', 'smoke_03.png'],
