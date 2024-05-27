@@ -104,7 +104,7 @@ class Platformer extends Phaser.Scene {
         });
 
         // Set up player avatar
-        this.player = this.physics.add.sprite(1200, 0, "platformer_characters", 0);
+        this.player = this.physics.add.sprite(70, 345, "platformer_characters", 0);
         this.player.setCollideWorldBounds(true);
         this.player.setTint(0xff0000);
 
@@ -186,6 +186,7 @@ class Platformer extends Phaser.Scene {
         this.rKey = this.input.keyboard.addKey('R');
         this.lShiftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
         this.yKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Y);
+        this.pKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
 
         this.input.keyboard.enabled = true;
 
@@ -252,6 +253,10 @@ class Platformer extends Phaser.Scene {
     update() {
         if (Phaser.Input.Keyboard.JustDown(this.yKey)) {
             this.handleYKeyPress();
+        }
+
+        if (Phaser.Input.Keyboard.JustDown(this.pKey)) {
+            this.coinGroup.clear(true, true);
         }
 
         // Handle player controls
