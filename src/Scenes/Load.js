@@ -18,6 +18,9 @@ class Load extends Phaser.Scene {
             frameHeight: 16
         });
 
+        this.load.multiatlas("kenny-particles", "kenny-particles.json");
+
+
         // Load the bitmap font
         this.load.setPath('/assets/fonts');
         this.load.bitmapFont('b93', 'b93font_0.png', 'b93font.fnt');
@@ -29,6 +32,7 @@ class Load extends Phaser.Scene {
         this.load.audio('jump', 'jump.mp3');
         this.load.audio('coin', 'coin.mp3');
         this.load.audio('exit', 'exit.mp3');
+
 
 
 

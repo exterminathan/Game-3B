@@ -90,20 +90,10 @@ class Platformer extends Phaser.Scene {
     }
 
     create() {
-
-        // Create a new tilemap game object using the correct tile size and map size
+        // Create the tilemap and ground layer
         this.map = this.make.tilemap({ key: "baselevel" });
-
-        // Set the world bounds to extend high above the visible area
-        this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels + 5000);
-
-        // Add a tileset to the map
         this.tileset = this.map.addTilesetImage("MonochromeTileset", "tilemap_tiles");
-
-        // Create a ground layer
         this.groundLayer = this.map.createLayer("BaseLayer", this.tileset, 0, 0);
-
-        // Set the collision properties for all tiles
         this.groundLayer.setCollisionByProperty({ collides: true });
 
         // Handle "platform" tiles
@@ -127,8 +117,6 @@ class Platformer extends Phaser.Scene {
 
         // Set up enemies
         this.enemies = this.physics.add.group();
-
-        // Example enemy coordinates
         const enemyCoordinates = [
             { x: 200, y: 300 },
             { x: 400, y: 300 },
@@ -141,40 +129,56 @@ class Platformer extends Phaser.Scene {
             this.enemies.add(enemy.sprite);
         });
 
-
-        
         // Ensure enemies collide with the ground layer
         this.physics.add.collider(this.enemies, this.groundLayer);
 
-         // Create coins from Tiled objects
-         // Create coins with physics and proper settings
-         this.coins = this.map.createFromObjects('Objects', {
+        // Create coins from Tiled objects
+        this.coins = this.map.createFromObjects('Coins', {
             name: 'coin',
             key: 'platformer_characters',
-            frame: 5  // Adjust the frame number if needed
+            frame: 2 // Adjust the frame number if needed
         });
-    
+
         // Convert the coins into Arcade Physics sprites (STATIC_BODY, so they don't move)
         this.coins.forEach((coin) => {
             this.physics.world.enable(coin, Phaser.Physics.Arcade.STATIC_BODY);
-            coin.body.setAllowGravity(false);
-            coin.setOrigin(0, 0);
+            coin.setOrigin(0.5, 0.5);
+            console.log('Coin created at:', coin.x, coin.y); // Log coin creation
         });
-    
+
+        console.log(this.coins);
+
         // Create a Phaser group out of the array this.coins
-        // This will be used for collision detection below.
         this.coinGroup = this.add.group(this.coins);
-    
+
         // Handle collision detection with coins
         this.physics.add.overlap(this.player, this.coinGroup, (player, coin) => {
             coin.destroy(); // remove coin on overlap
             this.collectCoin(); // add any additional logic for collecting the coin
         });
 
+        // Create door from Tiled objects
+        this.door = this.map.createFromObjects('Coins', {
+            name: 'door',
+            key: 'platformer_characters',
+            frame: 56 // Adjust the frame number if needed
+        });
 
+        // Convert the door into an Arcade Physics sprite (STATIC_BODY, so it doesn't move)
+        this.door.forEach((door) => {
+            this.physics.world.enable(door, Phaser.Physics.Arcade.STATIC_BODY);
+            door.setOrigin(0.5, 0.5);
+            console.log('Door created at:', door.x, door.y); // Log door creation
+        });
 
+        console.log(this.door);
 
-
+        // Handle collision detection with door
+        this.physics.add.overlap(this.player, this.door, (player, door) => {
+            if (this.coinGroup.countActive(true) === 0) {
+                this.handleYKeyPress(); // Simulate Y press if all coins are collected
+            }
+        });
 
         // Set up Phaser-provided cursor key input
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -183,7 +187,6 @@ class Platformer extends Phaser.Scene {
         this.yKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Y);
 
         this.input.keyboard.enabled = true;
-
 
         // Debug key listener (assigned to D key)
         this.input.keyboard.on('keydown-D', () => {
@@ -195,47 +198,61 @@ class Platformer extends Phaser.Scene {
         // Camera settings to follow the player and limit vertical movement
         this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         this.cameras.main.startFollow(this.player, true, 0.25, 0.25);
-        //OPTIONAL: CAMERA DEADZONE
         this.cameras.main.setDeadzone(50, 50);
-
         this.cameras.main.setZoom(this.SCALE);
-        this.cameras.main.setFollowOffset(0, -this.map.heightInPixels / 2); // Ensure camera doesn't move too high
+        this.cameras.main.setFollowOffset(0, -this.map.heightInPixels / 2);
 
         this.scoreText = this.add.bitmapText(60, 20, 'b93', "Score: 0", 30).setOrigin(0.5);
-        this.scoreText.setScrollFactor(0); // Ensures text stays in place during camera movement
+        this.scoreText.setScrollFactor(0);
 
         console.log('Score text created:', this.scoreText);
+
+        // VFX
+        my.vfx.walking = this.add.particles(0, 0, "kenny-particles", {
+            frame: ['smoke_01.png', 'smoke_02.png', 'smoke_03.png'],
+            random: true,
+            scale: { start: 0.03, end: 0.06 },
+            lifespan: 120,
+            alpha: { start: 1, end: 0.1 },
+        });
+
+        my.vfx.walking.stop();
+
+        my.vfx.coin = this.add.particles(0, 0, "kenny-particles", {
+            frame: 'circle_02.png',
+            scale: { start: 0.1, end: 0.2 },
+            lifespan: 300,
+            alpha: { start: 1, end: 0 },
+        });
+
+        my.vfx.coin.stop();
     }
 
     handleYKeyPress() {
         // Play the exit sound
         this.sound.play('exit');
-    
+
         // Transition to the EndScene
         this.scene.start('EndScene');
     }
-    
-
 
     collectCoin(player, coin) {
-        coin.disableBody(true, true);
-    
-        // Update the score
-        this.score += 10;
-        this.scoreText.setText('Score: ' + this.score);
-    
-        // Play coin collection sound
         this.sound.play('coin');
+        this.score++;
+
+        my.vfx.coin.startFollow(this.player, this.player.displayWidth / 2 - 10, this.player.displayHeight / 2 - 5, false);
+        my.vfx.coin.start();
+
+        this.time.delayedCall(1000, () => {
+            my.vfx.coin.stop();
+        });
     }
-    
 
     update() {
-
         if (Phaser.Input.Keyboard.JustDown(this.yKey)) {
             this.handleYKeyPress();
         }
 
-        
         // Handle player controls
         const maxFallingSpeed = 800; // Adjust this value as needed
         const maxRisingSpeed = -800;
@@ -258,14 +275,36 @@ class Platformer extends Phaser.Scene {
             this.player.setAccelerationX(-this.ACCELERATION);
             this.player.setFlip(true, false);
             this.player.anims.play('walk', true);
+            this.player.setTint(0xADD8E6); // Set light blue tint
+
+            my.vfx.walking.startFollow(this.player, this.player.displayWidth / 2 - 10, this.player.displayHeight / 2 - 5, false);
+
+            my.vfx.walking.setParticleSpeed(this.PARTICLE_VELOCITY, 0);
+
+            // Only play smoke effect if touching the ground
+            if (this.player.body.blocked.down) {
+                my.vfx.walking.start();
+            }
         } else if (this.cursors.right.isDown) {
             this.player.setAccelerationX(this.ACCELERATION);
             this.player.resetFlip();
             this.player.anims.play('walk', true);
+            this.player.setTint(0xADD8E6); // Set light blue tint
+
+            my.vfx.walking.startFollow(this.player, this.player.displayWidth / 2 - 10, this.player.displayHeight / 2 - 5, false);
+
+            my.vfx.walking.setParticleSpeed(this.PARTICLE_VELOCITY, 0);
+
+            // Only play smoke effect if touching the ground
+            if (this.player.body.blocked.down) {
+                my.vfx.walking.start();
+            }
         } else {
             this.player.setAccelerationX(0);
             this.player.setDragX(this.DRAG);
             this.player.anims.play('idle');
+            this.player.clearTint(); // Remove tint when idle
+            my.vfx.walking.stop();
         }
 
         // Handle wall jumping
@@ -410,20 +449,16 @@ class Platformer extends Phaser.Scene {
     }
 }
 
-
-
 //Win End Screen
 class EndScene extends Phaser.Scene {
     constructor() {
         super("EndScene");
-
     }
 
     preload() {
         // Load the bitmap font
         this.load.setPath('/assets/fonts');
         this.load.bitmapFont('b93', 'b93font_0.png', 'b93font.fnt');
-
     }
 
     create() {
