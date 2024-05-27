@@ -204,9 +204,6 @@ class Platformer extends Phaser.Scene {
         this.cameras.main.setZoom(this.SCALE);
         this.cameras.main.setFollowOffset(0, -this.map.heightInPixels / 2);
 
-        this.scoreText = this.add.bitmapText(60, 20, 'b93', "Score: 0", 30).setOrigin(0.5);
-        this.scoreText.setScrollFactor(0);
-
         console.log('Score text created:', this.scoreText);
 
         // VFX
