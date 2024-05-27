@@ -466,7 +466,7 @@ class EndScene extends Phaser.Scene {
 
     preload() {
         // Load the bitmap font
-        this.load.setPath('/assets/fonts');
+        this.load.setPath('./assets/fonts');
         this.load.bitmapFont('b93', 'b93font_0.png', 'b93font.fnt');
     }
 

@@ -27,7 +27,7 @@ class Load extends Phaser.Scene {
 
 
         // Load audio files
-        this.load.setPath('/assets/audio');
+        this.load.setPath('./assets/audio');
         this.load.audio('death', 'death.mp3');
         this.load.audio('jump', 'jump.mp3');
         this.load.audio('coin', 'coin.mp3');
