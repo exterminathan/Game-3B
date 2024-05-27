@@ -1,0 +1,64 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "": {
+            "scaleInDock": 3
+        },
+        "C:/Users/exter/OneDrive/Documents/GitHub/PlatformImprovement/assets/platformer-level-1.tmx": {
+            "scale": 3,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 216,
+                "y": 290.16666666666663
+            }
+        },
+        "C:/Users/exter/OneDrive/Documents/GitHub/PlatformImprovement/assets/platformer-level-1.tmx#kenny_tilemap_packed": {
+            "scaleInDock": 1
+        },
+        "baselevel.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1025.3333333333333,
+                "y": 156.66666666666669
+            }
+        },
+        "baselevel.tmx#MonochromeTileset": {
+            "scaleInDock": 2,
+            "scaleInEditor": 1
+        },
+        "baselevel.tmx#ObjectsTileset": {
+            "scaleInDock": 2
+        },
+        "baselevel.tmx#TransparentTileset": {
+            "scaleInDock": 2
+        }
+    },
+    "last.exportedFilePath": "C:/Users/exter/OneDrive/Documents/GitHub/PlatformImprovement/assets",
+    "last.imagePath": "C:/Users/exter/OneDrive/Desktop/CMPM 120/Game 3/Assets/characters/objects",
+    "map.height": 30,
+    "map.lastUsedExportFilter": "All Files (*)",
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "map.width": 120,
+    "openFiles": [
+        "baselevel.tmx"
+    ],
+    "project": "Level.tiled-project",
+    "recentFiles": [
+        "baselevel.tmx",
+        "C:/Users/exter/OneDrive/Documents/GitHub/PlatformImprovement/assets/platformer-level-1.tmx"
+    ],
+    "tileset.embedInMap": true,
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}

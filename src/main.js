@@ -23,15 +23,12 @@ let config = {
         default: 'arcade',
         arcade: {
             debug: true,
-            gravity: {
-                x: 0,
-                y: 0
-            }
+            gravity: { y: 3000},
         }
     },
     width: 1440,
     height: 900,
-    scene: [Load, Platformer]
+    scene: [Load, Platformer, EndScene]
 }
 
 var cursors;
